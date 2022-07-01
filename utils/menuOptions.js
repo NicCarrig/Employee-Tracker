@@ -84,10 +84,6 @@ function viewAllRoles(){
 }
 
 function viewAllEmployees(){
-    // const sql = `SELECT employees.id, employees.first_name, employees.last_name,
-    //             roles.title, employees.manager_id
-    //             FROM employees
-    //             JOIN roles ON employees.role_id=roles.id`;
 
     const sql = `SELECT employees.first_name, employees.last_name, roles.title, roles.salary, departments.department_name,
                  CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employees
@@ -118,7 +114,7 @@ function addDepartment(){
         db.query(sql, input.name, (err, rows) => {
             if (err) throw err;
 
-            console.table(rows);
+            console.log(`${input.name} department added`);
             displayMainMenu();
         })
     })
@@ -159,25 +155,23 @@ function addRole(){
                 //should create an array of strings starting with 
                 depList.push(`${i+1}. ` + results[i].department_name);
             }
-            // console.log(depList);
+
             inquirer.prompt({
                 type: 'list',
                 name: 'department',
                 message: 'Please choose a department',
                 choices: depList
             }).then(depName => {
-                // console.log(input.title);
-                // console.log(input.salary);
-                // console.log(depName.department);
+
                 const depID = parseInt(depName.department.split(".")[0]);
-                // console.log(depID);
+
                 const sql = `INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)`;
                 const params = [input.title, input.salary, depID];
 
                 db.query(sql, params, (err, row) =>{
                     if (err) throw err;
 
-                    console.log(`Added ${input.title} to roles`);
+                    console.log(`${input.title} added to roles`);
                     displayMainMenu();
                 });
             });
@@ -219,8 +213,6 @@ function addEmployee(){
             message: 'Employee manager ID number (press enter if the employee does not have an assigned manager'
         }
     ]).then(input => {
-        // console.log(input);
-        // let mgmtID = input.manager_id;
 
         const sql = `INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
         let params = [input.first_name, input.last_name, input.role_id, input.manager_id];
