@@ -71,20 +71,34 @@ function viewAllDepartments(){
 }
 
 function viewAllRoles(){
-    const sql = `SELECT * FROM roles`;
+    const sql = `SELECT roles.id, roles.title, roles.salary, departments.department_name
+                FROM roles
+                INNER JOIN departments ON roles.department_id=departments.id`;
 
     db.query(sql, (err, rows) => {
         if (err) throw err;
+
         console.table(rows);
         displayMainMenu();
     });
 }
 
 function viewAllEmployees(){
-    const sql = `SELECT * FROM employees`;
+    // const sql = `SELECT employees.id, employees.first_name, employees.last_name,
+    //             roles.title, employees.manager_id
+    //             FROM employees
+    //             JOIN roles ON employees.role_id=roles.id`;
+
+    const sql = `SELECT employees.first_name, employees.last_name, roles.title, roles.salary, departments.department_name,
+                 CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employees
+                 INNER JOIN roles on roles.id = employees.role_id 
+                 INNER JOIN departments on departments.id = roles.department_id 
+                 LEFT JOIN employees e on employees.manager_id = e.id`;
+
 
     db.query(sql, (err, rows) => {
         if (err) throw err;
+        console.log("***********************EMPLOYEE LIST***********************");
         console.table(rows);
         displayMainMenu();
     });
